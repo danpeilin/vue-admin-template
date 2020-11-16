@@ -35,7 +35,6 @@
   padding: 20px;
 }
 .myheader {
-  align-self: start;
   font-size: 24px;
   margin: 20px 0px;
 }

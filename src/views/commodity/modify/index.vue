@@ -1,21 +1,18 @@
 <template>
   <div class="mybody">
-    <div class="myheader">添加商品分类</div>
+    <div class="myheader">修改商品分类</div>
+    <div class="classifyImage">
+      <el-image class="img" :src="tableData.classifyImage" fit="cover"></el-image>
+    </div>
     <el-form ref="form" :model="form" label-width="230px">
       <el-form-item label="商品分类名称">
-        <el-input v-model="form.name"></el-input>
+        <el-input v-model="tableData.classify"> </el-input>
       </el-form-item>
       <el-form-item label="商品分类图片(图片规格：171*180)">
-        <el-upload
-          class="upload-demo"
-          action="#"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          multiple
-          :limit="3"
-          :on-exceed="handleExceed"
-        >
+        <el-upload class="upload-demo"
+          action="#" :on-preview="handlePreview"
+          :on-remove="handleRemove" :before-remove="beforeRemove"
+          multiple :limit="3" :on-exceed="handleExceed">
           <el-button size="small" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">
             只能上传jpg/png文件，且不超过500kb
@@ -23,8 +20,8 @@
         </el-upload>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">立即创建</el-button>
-        <el-button>取消</el-button>
+        <el-button type="primary" @click="onSubmit">确定</el-button>
+        <el-button @click="onReset(form)">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -35,17 +32,25 @@
   padding: 20px;
 }
 .myheader {
-  align-self: start;
   font-size: 24px;
   margin: 20px 0px;
+}
+.classifyImage{
+  height: 300px;
+  width: 200px;
+  margin-left: 230px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>
 
 
 <script>
+import { resetRouter } from '@/router';
 export default {
   data() {
     return {
+      tableData: this.$route.params.data,
       form: {
         name: "",
         region: "",
@@ -60,7 +65,7 @@ export default {
   },
   methods: {
     onSubmit() {
-      alert("·添加商品分类成功")
+      alert("·修改商品分类成功")
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
@@ -78,6 +83,9 @@ export default {
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
+    onReset(dom){
+      
+    }
   },
 };
 </script>
