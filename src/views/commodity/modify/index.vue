@@ -1,6 +1,7 @@
 <template>
   <div class="mybody">
     <div class="myheader">修改商品分类</div>
+    <el-divider></el-divider>
     <div class="classifyImage">
       <el-image class="img" :src="tableData.classifyImage" fit="cover"></el-image>
     </div>
@@ -32,7 +33,7 @@
   padding: 20px;
 }
 .myheader {
-  font-size: 24px;
+  font-size: 35px;
   margin: 20px 0px;
 }
 .classifyImage{

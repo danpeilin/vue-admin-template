@@ -81,6 +81,48 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/comparam',
+    component: Layout,
+    redirect: '/comparam/setsize',
+    name: 'comparam',
+    meta: { title: '基本参数管理 ', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: '/setsize',
+        name: 'setsize',
+        component: () => import('@/views/comparam/setsize/index'),
+        meta: { title: '尺寸设置', icon: 'table' }
+      },
+      {
+        path: '/setcolor',
+        name: 'setcolor',
+        component: () => import('@/views/comparam/setcolor/index'),
+        meta: { title: '颜色设置', icon: 'tree' }
+      },
+    ]
+  },
+  {
+    path: '/commanage',
+    component: Layout,
+    redirect: '/commanage/addcominfo',
+    name: 'commanage',
+    meta: { title: '商品管理 ', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: '/addcominfo',
+        name: 'addcominfo',
+        component: () => import('@/views/commanage/addcominfo/index'),
+        meta: { title: '添加商品信息', icon: 'table' }
+      },
+      {
+        path: '/setcolor',
+        name: 'setcolor',
+        component: () => import('@/views/comparam/setcolor/index'),
+        meta: { title: '颜色设置', icon: 'tree' }
+      },
+    ]
+  },
 
   // {
   //   path: '/form',
@@ -170,7 +212,7 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

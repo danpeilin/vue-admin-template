@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <div class="dashboard-text">管理员: <span style="color: #409EFF;font-family:YouYuan;font-weight:700;">{{ name }}</span>，您好！</div>
   </div>
 </template>
 

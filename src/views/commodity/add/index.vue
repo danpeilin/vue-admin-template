@@ -1,6 +1,7 @@
 <template>
   <div class="mybody">
     <div class="myheader">添加商品分类</div>
+    <el-divider></el-divider>
     <el-form ref="form" :model="form" label-width="230px">
       <el-form-item label="商品分类名称">
         <el-input v-model="form.name"></el-input>
@@ -35,7 +36,7 @@
   padding: 20px;
 }
 .myheader {
-  font-size: 24px;
+  font-size: 35px;
   margin: 20px 0px;
 }
 </style>

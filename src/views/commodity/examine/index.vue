@@ -2,7 +2,7 @@
   <div class="mybody">
 
     <div class="myheader">商品分类列表</div>
-
+    <el-divider></el-divider>
     <el-table :data="tableData" stripe:true style="width: 100%">
       <el-table-column prop="id" label="#"></el-table-column>
       <el-table-column prop="classify" label="商品分类名称"></el-table-column>
@@ -36,7 +36,7 @@
 }
 .myheader {
   align-self: start;
-  font-size: 24px;
+  font-size: 35px;
   margin: 20px 0px;
 }
 </style>
