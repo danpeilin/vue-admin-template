@@ -116,10 +116,49 @@ export const constantRoutes = [
         meta: { title: '添加商品信息', icon: 'table' }
       },
       {
-        path: '/setcolor',
-        name: 'setcolor',
-        component: () => import('@/views/comparam/setcolor/index'),
-        meta: { title: '颜色设置', icon: 'tree' }
+        path: '/selectcominfo',
+        name: 'selectcominfo',
+        component: () => import('@/views/commanage/selectcominfo/index'),
+        meta: { title: '查看商品信息', icon: 'tree' },
+      },
+      {
+        path: '/picmanage',
+        name: 'picmanage',
+        component: () => import('@/views/commanage/picmanage/index'),
+        meta: { title: '商品图片管理', icon: 'tree' },
+      },
+      {
+        path: '/colorsizecom',
+        name: 'colorsizecom',
+        component: () => import('@/views/commanage/colorsizecom/index'),
+        meta: { title: '尺寸颜色管理', icon: 'tree' },
+      },
+      {
+        path: '/kucuncom',
+        name: 'kucuncom',
+        component: () => import('@/views/commanage/kucuncom/index'),
+        meta: { title: '商品库存管理', icon: 'tree' },
+      },
+    ]
+  },
+  {
+    path: '/comuser',
+    component: Layout,
+    redirect: '/comuser/adduser',
+    name: 'comuser',
+    meta: { title: '用户管理 ', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: '/adduser',
+        name: 'adduser',
+        component: () => import('@/views/comuser/adduser/index'),
+        meta: { title: '添加用户信息', icon: 'table' }
+      },
+      {
+        path: '/selectuser',
+        name: 'selectuser',
+        component: () => import('@/views/comuser/selectuser/index'),
+        meta: { title: '查看用户信息', icon: 'tree' }
       },
     ]
   },
