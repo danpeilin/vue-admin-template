@@ -60,6 +60,14 @@
             label="用户邮箱">
             </el-table-column>
             <el-table-column
+            prop="role"
+            label="用户角色">
+            </el-table-column>
+            <el-table-column
+            prop="isban"
+            label="是否封禁">
+            </el-table-column>
+            <el-table-column
             fixed="right"
             label="操作"
             width="100">
@@ -93,6 +101,23 @@
                 </el-form-item>
                 <el-form-item label="用户邮箱">
                     <el-input v-model="form.price"></el-input>
+                </el-form-item>
+                <el-form-item label="用户角色">
+                    <el-select v-model="form.role" placeholder="请选择">
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="是否禁用">
+                   <el-switch
+                    v-model="isban"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949">
+                  </el-switch>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="toeidt">立即修改</el-button>
@@ -150,48 +175,64 @@ export default {
             id: '1',
             username: '测试',
             sex:1,
+            role: '管理员',
+            isban: '1',
             email: 240,
         }, {
             id: '2',
             username: '测试',
             sex:1,
+            role: '管理员',
+            isban: '1',
             email: 240,
         }, {
             id: '3',
             username: '测试',
             sex:1,
+            role: '管理员',
+            isban: '1',
             email: 240,
         }, {
             id: '4',
             username: '测试',
             sex:1,
+            role: '管理员',
+            isban: '1',
             email: 240,
         }, {
             id: '5',
             username: '测试',
             sex:1,
+            role: '管理员',
+            isban: '1',
             email: 240,
         }, {
             id: '6',
             username: '测试',
             sex:1,
+            role: '管理员',
+            isban: '1',
             email: 240,
         }, {
             id: '7',
             username: '测试',
             sex:1,
+            role: '管理员',
+            isban: '1',
             email: 240,
         }],
         form: {
             id: '',
             username: '',
+            role: '',
             sex: '',
             email: '',
         },
         tablechecked:[],
         checked:[],
         deleteallbtn: true,
-        editdrawer: false
+        editdrawer: false,
+        isban: true
       }
     },
     methods: {

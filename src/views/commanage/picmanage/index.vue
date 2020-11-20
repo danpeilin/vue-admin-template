@@ -95,7 +95,7 @@
                     </el-dialog>
                 <div class="demo-drawer__footer">
                 <el-button @click="cancelForm">取 消</el-button>
-                <el-button type="primary" @click="toedit" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+                <el-button type="primary" @click="toedit" >确定</el-button>
                 </div>
             </div>
         </el-drawer>

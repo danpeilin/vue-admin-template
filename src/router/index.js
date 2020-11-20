@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
 
@@ -137,6 +137,22 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/orderManagement',
+    component: Layout,
+    redirect: '/orderManagement/viewOrder',
+    name: 'orderManagement',
+    meta: { title: '订单管理', icon: 'el-icon-s-help' },
+    alwaysShow: true,
+    children: [
+      {
+        path: '/viewOrder',
+        name: 'viewOrder',
+        component: () => import('@/views/orderManagement/viewOrder/index'),
+        meta: { title: '查看订单信息', icon: 'table' },
+      }
+    ]
+  },
+  {
     path: '/comuser',
     component: Layout,
     redirect: '/comuser/adduser',
@@ -157,22 +173,7 @@ export const constantRoutes = [
       },
     ]
   },
-  {
-    path: '/orderManagement',
-    component: Layout,
-    redirect: '/orderManagement/viewOrder',
-    name: 'orderManagement',
-    meta: { title: '订单管理', icon: 'el-icon-s-help' },
-    alwaysShow: true,
-    children: [
-      {
-        path: '/viewOrder',
-        name: 'viewOrder',
-        component: () => import('@/views/orderManagement/viewOrder/index'),
-        meta: { title: '查看订单信息', icon: 'table' },
-      }
-    ]
-  },
+  
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
