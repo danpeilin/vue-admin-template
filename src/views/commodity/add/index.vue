@@ -1,31 +1,25 @@
 <template>
-  <div class="mybody">
+  <div class="mybody" v-loading="loading">
     <div class="myheader">添加商品分类</div>
     <el-divider></el-divider>
-    <el-form ref="form" :model="form" label-width="230px">
+    <el-form ref="form" label-width="230px">
       <el-form-item label="商品分类名称">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
       <el-form-item label="商品分类图片(图片规格：171*180)">
         <el-upload
-          class="upload-demo"
-          action="#"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          multiple
-          :limit="3"
-          :on-exceed="handleExceed"
-        >
-          <el-button size="small" type="primary">点击上传</el-button>
-          <div slot="tip" class="el-upload__tip">
-            只能上传jpg/png文件，且不超过500kb
-          </div>
-        </el-upload>
+        class="avatar-uploader"
+        action="http://localhost:8002/fileoss"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload">
+          <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">立即创建</el-button>
-        <el-button>取消</el-button>
+        <el-button @click="onReset">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -39,45 +33,99 @@
   font-size: 35px;
   margin: 20px 0px;
 }
+.avatar-uploader .el-icon-plus {
+  border: 1px dashed #d9d9d9 !important;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-icon-plus:hover {
+  border-color: #409EFF !important;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 </style>
 
 
 <script>
+import { uploading } from '@/api/commodity'
+
 export default {
   data() {
     return {
       form: {
         name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: "",
-      }
-    };
+        imageUrl: ''
+      },
+      loading: false,
+    }
   },
   methods: {
     onSubmit() {
-      alert("·添加商品分类成功")
+      if(this.checkForm()){
+        this.loading = true;
+        var data = {
+          cateName: this.form.name,
+          catePic: this.form.imageUrl
+        }
+        this.upload(data);
+        this.onReset();
+      }else{
+        this.$message.error('表单信息不完整，无法添加!');
+      }
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    onReset(){
+      this.form = [];
     },
-    handlePreview(file) {
-      console.log(file);
+    handleAvatarSuccess(res, file) {
+        this.loading = false;
+        this.form.imageUrl = URL.createObjectURL(file.raw);
     },
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
-      );
+    beforeAvatarUpload(file) {
+      const isJPG = (file.type === 'image/jpeg') || (file.type === 'png') || (file.type === 'gif');
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isJPG) {
+        this.$message.error('上传图片格式有误!');
+      }
+      if (!isLt2M) {
+        this.$message.error('上传图片大小不能超过 2MB!');
+      }
+      this.loading = true;
+      return isJPG && isLt2M;
     },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
+    checkForm(){
+      var name = false;
+      var imageUrl = false;
+      if(this.form.name != null && this.form.name.length > 0){
+          name = true;
+      }
+      if(this.form.imageUrl != null && this.form.imageUrl.length > 0){
+          imageUrl = true;
+      }
+
+      return name && imageUrl;
     },
+    //上传到数据库方法
+    upload(data){
+      uploading(data).then((res) => {
+        if(res.code == 200){
+          this.$message.success('上传成功');
+          this.loading = false;
+        }
+      })
+    }
   },
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="mybody">
+  <div class="mybody" v-loading="loading">
 
     <div class="myheader">商品分类列表</div>
     <el-divider></el-divider>
@@ -27,23 +27,23 @@
       </span>
     </el-dialog>
 
-    <el-drawer title="修改商品分类" :visible.sync="drawer" :direction="direction" :before-close="handleClose">
+    <el-drawer title="修改商品分类" :visible.sync="drawer" :before-close="handleClose">
       <div class="drawerBody">
         <el-form ref="form" label-width="auto" label-position="top">
         <el-form-item label="商品分类名称" size="40px">
-          <el-input v-model="modifyRow.classify"></el-input>
+          <el-input v-model="modifyForm.name"></el-input>
         </el-form-item>
         <el-form-item label="商品分类图片(点击图片更换)">
           <el-upload class="avatar-uploader" 
-          action="https://jsonplaceholder.typicode.com/posts/"
+          action="http://localhost:8002/fileoss"
           :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <img v-if="modifyForm.imageUrl" :src="modifyForm.imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="modifiPush">提交</el-button>
-          <el-button @click="modifyRow = {}">重置</el-button>
+          <el-button @click="modifyForm = {}">重置</el-button>
         </el-form-item>
       </el-form>
       </div>
@@ -90,75 +90,92 @@
 </style>
 
 <script>
+
 export default {
   data() {
     return {
+      //弹出框开关
       dialogVisible: false,
+      //侧边栏开关
       drawer: false,
-      direction: 'rtl',
+      //删除行数据
       removeRow: {},
+      //修改行数据
       modifyRow: {},
-      imageUrl: '',
-      tableData: [
-        {
+      //修改的表单数据
+      modifyForm: {
+        name: "",
+        imageUrl: ''
+      },
+      //加载开关
+      loading: false,
+      //列表数据
+      tableData: [{
           id: "1",
           classify: "男装",
           classifyImage: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        },
-        {
-          id: "2",
-          classify: "女装",
-          classifyImage: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        },
-        {
-          id: "3",
-          classify: "休闲装",
-          classifyImage: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        },
-      ],
+        }],
     };
   },
   methods: {
+    //关闭侧边栏
     handleClose(done) {
       this.$confirm("确认关闭？").then((_) => {
+        this.loading = false;
           done();
           }).catch((_) => {});
     },
+    //图片上传之后回调
     handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+        this.modifyForm.imageUrl = URL.createObjectURL(file.raw);
+        this.loading = false;
     },
+    //在图片上传之前回调
     beforeAvatarUpload(file) {
-        const isJPG = true;//file.type === 'image/jpeg';
+        const isJPG = (file.type === 'image/jpeg') || (file.type === 'png') || (file.type === 'gif');
         const isLt2M = file.size / 1024 / 1024 < 2;
         if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
+          this.$message.error('上传图片格式有误!');
         }
         if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
+          this.$message.error('上传图片大小不能超过 2MB!');
         }
+        this.loading = true;
         return isJPG && isLt2M;
     },
-
-
+    //获取要删除的行
     remove(data) {
         this.dialogVisible = true;
         this.removeRow = data;
     },
+    //提交删除
     removePush(){
         this.dialogVisible = false;
         this.tableData.splice(this.removeRow);
-        //请求后端删除
     },
+    //获取要修改的行数据
     modify(row){
         this.drawer = true;
         this.modifyRow = row;
     },
+    //请求提交修改
     modifiPush(){
-      alert("修改"+this.modifyRow.id);
-      this.drawer = false;
-        //请求后端修改分类图片
+      this.loading = true;
+      if(this.modifyForm.name != null && this.modifyForm.name.length > 0){
+          if(this.modifyForm.imageUrl != null && this.modifyForm.imageUrl.length > 0){
+            this.$message.success('修改成功！');
+            this.drawer = false;
+          }else this.$message.error('表单信息不完整，无法修改！');
+      }else this.$message.error('表单信息不完整，无法修改！');
     },
-
+    upload(data){
+      uploading(data).then((res) => {
+        if(res.code == 200){
+          this.$message.success('上传成功');
+          this.loading = false;
+        }
+      })
+    }
   }
 };
 </script>
