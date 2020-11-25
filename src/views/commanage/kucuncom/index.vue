@@ -7,25 +7,24 @@
                 :data="tableData"
                 style="width: 100%">
                 <el-table-column
-                    prop="id"
+                    prop="goodsId"
                     label="#"
                     width="180">
                 </el-table-column>
                 <el-table-column
-                    prop="name"
-                    label="商品名称"
-                    width="180">
+                    prop="goodsName"
+                    label="商品名称">
                 </el-table-column>
-                <el-table-column
+                <!-- <el-table-column
                     prop="goodssize"
                     label="商品尺寸">
                 </el-table-column>
                 <el-table-column
                     prop="goodscolor"
                     label="商品颜色">
-                </el-table-column>
+                </el-table-column> -->
                 <el-table-column
-                    prop="goodskucun"
+                    prop="goodsStock"
                     label="商品库存">
                 </el-table-column>
                 <el-table-column
@@ -52,40 +51,42 @@
             </el-dialog>
 
         </el-card>
+
+        <div class="painblock">
+            <el-pagination
+                background
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page.sync="currentPage"
+                :page-size="pagesize"
+                layout="total, prev, pager, next"
+                :total="totalpage">
+            </el-pagination>
+        </div>
+
+
+
     </div>
 </template>
 
 <script>
+import {getallgoods} from '@/api/goods'
 export default {
     data() {
         return {
-          tableData: [{
-            id: '1',
-            name: '测试',
-            goodssize: '女式 xl',
-            goodscolor: '红色',
-            goodskucun:23,
-          }, {
-            id: '2',
-            name: '王小虎',
-            goodssize: '女式 xxxxxxl',
-            goodscolor: '蓝色',
-            goodskucun:23,
-          }, {
-            id: '3',
-            name: '测试',
-            goodssize: '女式 xxxxxxl',
-            goodscolor: '紫色',
-            goodskucun:23,
-          }, {
-            id: '4',
-            name: '王小虎',
-            goodssize: '女式 xxxxxxl',
-            goodscolor: '红色',
-            goodskucun:23,
-          }],
+        formInline: {
+          cateId: '',
+          goodsName: '',
+          startprice: '',
+          endprice: ''
+        },
+          tableData: [],
             dialogVisible: false,
             changekucun: '',
+            currentPage: 0,
+            pagesize: 10,
+            totalpage: 0,
+            sort: 'asc',
         }
     },
     methods: {
@@ -94,12 +95,39 @@ export default {
             this.changekucun = row.goodskucun
             this.dialogVisible = true
         },
+        handleSizeChange(val) {
+            console.log(`每页 ${val} 条`);
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val
+            this.getall(this.currentPage, this.pagesize)
+        },
         toedit() {
 
+        },
+        getall(currentPage, pageSize) {
+        let data = {
+            currentPage: currentPage,
+            pageSize: pageSize,
+            cateId: this.formInline.cateId,
+            goodsName: this.formInline.goodsName,
+            startprice: this.formInline.startprice,
+            endprice: this.formInline.endprice,
+            sort: this.sort
+            }
+            getallgoods(data).then((res) => {
+            if(res.code == 200) {
+                this.tableData = res.data.list
+                this.totalpage = res.data.total
+            }
+            })
         },
         handleClose(done) {
             done()
         }
+    },
+    created(){
+        this.getall(this.currentPage, this.pagesize)
     }
 }
 </script>
@@ -115,5 +143,9 @@ export default {
 .box-card {
     width: 60%;
     margin: 0 auto;
+}
+.painblock {
+    text-align: center;
+    margin-top: 20px;
 }
 </style>

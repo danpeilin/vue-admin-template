@@ -6,6 +6,7 @@ const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
+    username: '',
     avatar: ''
   }
 }
@@ -21,6 +22,9 @@ const mutations = {
   },
   SET_NAME: (state, name) => {
     state.name = name
+  },
+  SET_USERNAME: (state, username) => {
+    state.username = username
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
@@ -51,8 +55,8 @@ const actions = {
           return reject('认证失败，请重新登录！')
         }
 
-        const { name, avatar } = data
-
+        const { name, avatar, username } = data
+        commit('SET_USERNAME', username)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         resolve(data)

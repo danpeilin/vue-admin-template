@@ -24,11 +24,11 @@
             style="width: 100%;margin-top:20px;">
             <el-table-column
             fixed
-            prop="id"
+            prop="colorId"
             label="#">
             </el-table-column>
             <el-table-column
-            prop="name"
+            prop="colorName"
             label="商品尺寸名称">
             </el-table-column>
             <el-table-column
@@ -44,6 +44,20 @@
             </template>
             </el-table-column>
         </el-table>
+
+        <div class="painblock">
+          <el-pagination
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-size="pageSize"
+            layout="total, prev, pager, next"
+            :total="totalpage">
+          </el-pagination>
+        </div>
+
+
         <el-dialog
             title="修改商品颜色"
             :visible.sync="editgoodsdialogVisible"
@@ -61,31 +75,40 @@
     </div>
 </template>
 <script>
+import {allcolors, addcolors, deletecolors, updatecolors} from '@/api/color'
 export default {
     data() {
       return {
-        tableData: [{
-          id: '1',
-          name: '卡其色',
-        }, {
-          id: '2',
-          name: '土黄色',
-        }, {
-          id: '3',
-          name: '天蓝色',
-        }, {
-          id: '4',
-          name: '浅绿色',
-        }],
+        tableData: [],
         addcolordialogVisible: false,
         editgoodsdialogVisible: false,
         colorinput:'',
-        editinput: ''
+        editinput: '',
+        currentPage: 0,
+        pageSize: 10,
+        totalpage: 0,
+        colorId: 0
       };
     },
     methods: {
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.currentPage = val
+        this.getall(this.currentPage, this.pageSize)
+      },
       addgoodssize(){
-          //添加请求
+          addcolors(this.colorinput).then((res)=>{
+            if(res.code == 200) {
+              this.$notify({
+                title: '成功',
+                message: res.data.msg,
+                type: 'success'
+              });
+              this.getall(this.currentPage, this.pageSize)
+            }
+          })
           this.colorinput = ''
           this.addcolordialogVisible = false
       },
@@ -99,17 +122,47 @@ export default {
       },
       formedit(row) {
         this.editgoodsdialogVisible = true
-        this.editinput = row.name
+        this.editinput = row.colorName
+        this.colorId = row.colorId
       },
       editsize(){
-        //编辑接口
+        updatecolors(this.colorId, this.editinput).then((res)=>{
+          if(res.code == 200){
+            this.$notify({
+                title: '成功',
+                message: res.data.msg,
+                type: 'success'
+              });
+            this.getall(this.currentPage, this.pageSize)
+          }
+        })
         this.editinput = ''
         this.editgoodsdialogVisible = false
       },
       formdelete(row) {
           //删除接口
-          console.log(row.id);
+          deletecolors(row.colorId).then((res)=>{
+            if(res.code == 200){
+              this.$notify({
+                title: '成功',
+                message: res.data.msg,
+                type: 'success'
+              });
+              this.getall(this.currentPage, this.pageSize)
+            }
+          })
       },
+      getall(currentPage, pageSize){
+        allcolors(currentPage, pageSize).then((res)=>{
+          if(res.code == 200){
+            this.totalpage = res.data.total
+            this.tableData = res.data.list
+          }
+        })
+      }
+    },
+    created(){
+      this.getall(this.currentPage, this.pageSize)
     }
 }
 </script>
@@ -125,5 +178,9 @@ export default {
     margin-bottom: 5px;
     font-weight: 700;
     font-size: 15px;
+}
+.painblock {
+    text-align: center;
+    margin-top: 20px;
 }
 </style>

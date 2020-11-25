@@ -24,11 +24,11 @@
             style="width: 100%;margin-top:20px;">
             <el-table-column
             fixed
-            prop="id"
+            prop="sizeId"
             label="#">
             </el-table-column>
             <el-table-column
-            prop="name"
+            prop="sizeName"
             label="商品尺寸名称">
             </el-table-column>
             <el-table-column
@@ -44,6 +44,21 @@
             </template>
             </el-table-column>
         </el-table>
+
+
+        <div class="painblock">
+          <el-pagination
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-size="pageSize"
+            layout="total, prev, pager, next"
+            :total="totalpage">
+          </el-pagination>
+        </div>
+
+
         <el-dialog
             title="修改商品尺寸"
             :visible.sync="editgoodsdialogVisible"
@@ -61,33 +76,43 @@
     </div>
 </template>
 <script>
+import {allsize, addsizes, deletesizes, updatesizes} from '@/api/size'
 export default {
     data() {
       return {
-        tableData: [{
-          id: '1',
-          name: '儿童110CM',
-        }, {
-          id: '2',
-          name: '儿童110CM',
-        }, {
-          id: '3',
-          name: '儿童110CM',
-        }, {
-          id: '4',
-          name: '儿童110CM',
-        }],
+        tableData: [],
         addgoodsdialogVisible: false,
         editgoodsdialogVisible: false,
         goodsinput:'',
-        editinput: ''
+        editinput: '',
+        currentPage: 0,
+        pageSize: 10,
+        totalpage: 0,
+        sizeId: 0,
       };
     },
     methods: {
       addgoodssize(){
           //添加请求
+          addsizes(this.goodsinput).then((res)=>{
+            if(res.code == 200) {
+              this.$notify({
+                title: '成功',
+                message: res.data.msg,
+                type: 'success'
+              });
+              this.getall(this.currentPage, this.pageSize)
+            }
+          })
           this.goodsinput = ''
           this.addgoodsdialogVisible = false
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.currentPage = val
+        this.getall(this.currentPage, this.pageSize)
       },
       goodsclose(done) {
         this.goodsinput = ''
@@ -99,17 +124,47 @@ export default {
       },
       formedit(row) {
         this.editgoodsdialogVisible = true
-        this.editinput = row.name
+        this.editinput = row.sizeName
+        this.sizeId = row.sizeId
       },
       editsize(){
         //编辑接口
+        updatesizes(this.sizeId, this.editinput).then((res)=>{
+          if(res.code == 200) {
+            this.$notify({
+                title: '成功',
+                message: res.data.msg,
+                type: 'success'
+            });
+            this.getall(this.currentPage, this.pageSize)
+          }
+        })
         this.editinput = ''
         this.editgoodsdialogVisible = false
       },
       formdelete(row) {
-          //删除接口
-          console.log(row.id);
+          deletesizes(row.sizeId).then((res)=>{
+            if(res.code == 200) {
+              this.$notify({
+                title: '成功',
+                message: res.data.msg,
+                type: 'success'
+              });
+            }
+            this.getall(this.currentPage, this.pageSize)
+          })
       },
+      getall(currentPage, pageSize){
+        allsize(currentPage, pageSize).then((res)=>{
+          if(res.code == 200) {
+            this.tableData = res.data.list
+            this.totalpage = res.data.total
+          }
+        })
+      }
+    },
+    created() {
+      this.getall(this.currentPage, this.pageSize)
     }
 }
 </script>
@@ -125,5 +180,9 @@ export default {
     margin-bottom: 5px;
     font-weight: 700;
     font-size: 15px;
+}
+.painblock {
+    text-align: center;
+    margin-top: 20px;
 }
 </style>

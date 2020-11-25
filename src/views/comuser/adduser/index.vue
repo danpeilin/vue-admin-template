@@ -9,6 +9,9 @@
         <el-form-item label="用户名">
             <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
         </el-form-item>
+         <el-form-item label="用户昵称">
+            <el-input v-model="form.nickname" placeholder="请输入昵称"></el-input>
+        </el-form-item>
         <el-form-item label="密码">
             <el-input v-model="form.password" placeholder="请输入密码"></el-input>
         </el-form-item>
@@ -17,8 +20,8 @@
         </el-form-item>
         <el-form-item label="性别" prop="sex">
             <el-radio-group v-model="form.sex">
-                <el-radio label="男"></el-radio>
-                <el-radio label="女"></el-radio>
+                <el-radio label="0">男</el-radio>
+                <el-radio label="1">女</el-radio>
             </el-radio-group>
         </el-form-item>
         <el-form-item label="邮箱">
@@ -34,6 +37,7 @@
 </template>
 
 <script>
+import {adduser} from '@/api/usercom'
 export default {
   data(){
     return {
@@ -55,6 +59,7 @@ export default {
       }],
       form: {
         username:'',
+        nickname: '',
         password: '',
         repassword: '',
         sex: '',
@@ -64,30 +69,30 @@ export default {
   },
   methods: {
     toadd(){
-
+      adduser(this.form).then((res) => {
+        if(res.code = 200) {
+          this.$notify({
+              title: '成功',
+              message: res.data.msg,
+              type: 'success'
+          });
+        } else {
+          this.$notify({
+              title: '失败',
+              message: res.data.msg,
+              type: 'error'
+          });
+        }
+      })
     },
     resetForm() {
         this.form.username = ''
+        this.form.nickname = '',
         this.form.password = ''
         this.form.repassword = ''
         this.form.sex = ''
         this.form.email = ''
     },
-    handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
-    },
-    beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
-        }
-        if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
-    }
   }
 }
 </script>

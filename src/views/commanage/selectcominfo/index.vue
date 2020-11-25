@@ -2,12 +2,12 @@
     <div class="mybody">
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
             <el-form-item label="商品类别">
-                <el-select v-model="formInline.selectvalue" placeholder="请选择">
+                <el-select v-model="formInline.cateId" placeholder="请选择">
                   <el-option
                     v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    :key="item.cateId"
+                    :label="item.cateName"
+                    :value="item.cateId">
                   </el-option>
                 </el-select>
             </el-form-item>
@@ -53,10 +53,10 @@
             <el-table-column
             label="#"
             width="50"
-            prop="id">
+            prop="goodsId">
             </el-table-column>
             <el-table-column
-            prop="name"
+            prop="goodsName"
             width="300"
             label="商品名称">
             </el-table-column>
@@ -65,33 +65,33 @@
             width="100">
             <template slot-scope="scope">
                 <div style="width: 50px">
-                    <img class="img" :src="scope.row.goodsimg" />
+                    <img class="img" :src="scope.row.goodsPic" />
                 </div>
             </template>
             </el-table-column>
             <el-table-column
-            prop="price"
+            prop="goodsPrice"
             label="商品价格">
             </el-table-column>
             <el-table-column
-            prop="countprice"
+            prop="goodsDiscount"
             label="商品折后价格">
             </el-table-column>
             <el-table-column
-            prop="goodscount"
+            prop="goodsStock"
             label="商品库存">
             </el-table-column>
             <el-table-column
-            prop="goodsmade"
+            prop="goodsMaterial"
             label="商品材质"
             width="300">
             </el-table-column>
             <el-table-column
-            prop="goodsyunfei"
+            prop="goodsPostalfee"
             label="商品运费">
             </el-table-column>
             <el-table-column
-            prop="goodssale"
+            prop="goodsSales"
             label="商品销量">
             </el-table-column>
             <el-table-column
@@ -110,56 +110,69 @@
             </el-table-column>
         </el-table>
 
+         <div class="painblock">
+          <el-pagination
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-size="pagesize"
+            layout="total, prev, pager, next"
+            :total="totalpage">
+          </el-pagination>
+        </div>
+
 
         <el-drawer
           title="修改商品信息"
           :visible.sync="editdrawer"
           :before-close="editClose">
-          <el-form ref="form" label-width="80px">
+          <el-form 
+          v-loading="loading" ref="form" label-width="80px">
             <el-form-item label="所属类别">
-                <el-select v-model="form.class" placeholder="请选择">
+                <el-select v-model="form.cateId" placeholder="请选择">
                   <el-option
                     v-for="item in editoptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    :key="item.cateId"
+                    :label="item.cateName"
+                    :value="item.cateId">
                   </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="商品名称">
-                <el-input v-model="form.name"></el-input>
+                <el-input v-model="form.goodsName"></el-input>
             </el-form-item>
             <el-form-item label="商品图片">
                <el-upload
                     class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/"
+                    action="http://localhost:8002/fileoss"
                     :show-file-list="false"
                     :on-success="handleAvatarSuccess"
                     :before-upload="beforeAvatarUpload">
-                    <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
+                    <img v-if="form.goodsPic" :src="form.goodsPic" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
             </el-form-item>
             <el-form-item label="商品描述">
-                <el-input type="textarea" v-model="form.descripe"></el-input>
+                <el-input type="textarea" v-model="form.goodsDisc"></el-input>
             </el-form-item>
             <el-form-item label="商品价格">
-                <el-input v-model="form.price"></el-input>
+              <el-input-number v-model="form.goodsPrice" size="mini" :min="0" :max="999" label="商品价格"></el-input-number>
             </el-form-item>
             <el-form-item label="折后价格">
-                <el-input v-model="form.countprice"></el-input>
+              <el-input-number v-model="form.goodsDiscount" size="mini" :min="0" :max="999" label="折后价格"></el-input-number>
             </el-form-item>
             <el-form-item label="商品库存">
-                <el-input v-model="form.goodscount"></el-input>
+              <el-input-number v-model="form.goodsStock" size="mini" :min="0" :max="999" label="商品库存"></el-input-number>
             </el-form-item>
             <el-form-item label="商品材质">
-                <el-input v-model="form.goodsmade"></el-input>
+                <el-input v-model="form.goodsMaterial"></el-input>
             </el-form-item>
             <el-form-item label="商品运费">
-                <el-input v-model="form.goodsyunfei"></el-input>
+              <el-input-number v-model="form.goodsPostalfee" size="mini" :min="0" :max="999" label="商品运费"></el-input-number>
             </el-form-item>
             <el-form-item label="商品销量">
-                <el-input v-model="form.goodssale"></el-input>
+              <el-input-number v-model="form.goodsSales" size="mini" :min="0" :max="999" label="商品销量"></el-input-number>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="toeidt">立即修改</el-button>
@@ -171,145 +184,63 @@
 </template>
 
 <script>
+import {getallgoods, getallcate, getgoodsbyid, updateGoods, deletegoods, deleteallgoods} from '@/api/goods'
 export default {
     data() {
       return {
         formInline: {
-          selectvalue: '',
-          goodsname: '',
+          cateId: '',
+          goodsName: '',
           startprice: '',
           endprice: ''
         },
-        editoptions: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        options: [{
-            value: '选项1',
-            label: '黄金糕'
-          }, {
-            value: '选项2',
-            label: '双皮奶'
-          }, {
-            value: '选项3',
-            label: '蚵仔煎'
-          }, {
-            value: '选项4',
-            label: '龙须面'
-          }, {
-            value: '选项5',
-            label: '北京烤鸭'
-          }],
+        editoptions: [],
+        options: [],
         sorticon: 'el-icon-caret-bottom',
-        tableData: [{
-            id: '1',
-            name: '测试',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '2',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 140,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '3',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '4',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '5',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '6',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '7',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }],
+        tableData: [],
         form: {
-            class: '',
-            name: '',
-            imageUrl: '',
-            price: '',
-            countprice: '',
-            goodscount: '',
-            goodsmade: '',
-            goodsyunfei: '',
-            goodssale: '',
+            cateId: '',
+            goodsName: '',
+            goodsPic: '',
+            goodsDisc:'',
+            goodsPrice: '',
+            goodsDiscount: '',
+            goodsStock: '',
+            goodsMaterial: '',
+            goodsPostalfee: '',
+            goodsSales: '',
         },
         tablechecked:[],
         checked:[],
         deleteallbtn: true,
-        editdrawer: false
+        editdrawer: false,
+        currentPage: 0,
+        pagesize: 10,
+        totalpage: 0,
+        sort: 'asc',
+        loading: false
       }
     },
     methods: {
       onSubmit() {
-        console.log('submit!');
+        this.getall(this.currentPage, this.pagesize)
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.currentPage = val
+        this.getall(this.currentPage, this.pagesize)
       },
       onsort() {
         if (this.sorticon == 'el-icon-caret-bottom') {
           this.sorticon = 'el-icon-caret-top'
+          this.sort = 'desc'
+          this.getall(this.currentPage, this.pagesize)
         } else {
           this.sorticon = 'el-icon-caret-bottom'
+          this.sort = 'asc'
+          this.getall(this.currentPage, this.pagesize)
         }
       },
       selectchange(val) { 
@@ -318,48 +249,116 @@ export default {
             this.deleteallbtn = false
         } else {
             this.deleteallbtn = true
+
         }
       },
       alldelete() {
        this.tablechecked.forEach((item) => {
-           this.checked.push(parseInt(item.id))
+           this.checked.push(parseInt(item.goodsId))
        })
-       
-        console.log(this.checked)
+       deleteallgoods(this.checked).then((res)=>{
+          if(res.code == 200) {
+            this.$notify({
+              title: '成功',
+              message: res.data.msg,
+              type: 'success'
+            });
+            this.getall(this.currentPage, this.pagesize)
+          }
+       })
         this.tablechecked = []
         this.checked = []
       },
       formdelete(row){
-          console.log(row.id)
+        deletegoods(row.goodsId).then((res)=>{
+          if(res.code == 200) {
+            this.$notify({
+              title: '成功',
+              message: res.data.msg,
+              type: 'success'
+            });
+            this.getall(this.currentPage, this.pagesize)
+          }
+        })
       },
       editClose(done) {
-          this.form = []
+          this.form = {}
           done()
       },
       formedit(row){
-          this.editdrawer = true
-          console.log(row.id)
+        getallcate().then((res) => {
+          if(res.code == 200) {
+            this.editoptions = res.data.cates
+          }
+        })
+        getgoodsbyid(row.goodsId).then((res) => {
+          if(res.code == 200) {
+            this.form = res.data.goods
+          }
+        })
+        this.editdrawer = true
       },
       toeidt() {
           //请求编辑
+          updateGoods(this.form).then((res)=>{
+            if(res.code == 200) {
+              this.$notify({
+                title: '成功',
+                message: res.data.msg,
+                type: 'success'
+              });
+              this.getall(this.currentPage, this.pagesize)
+            }
+          })
           this.editdrawer = false
       },
+      getall(currentPage, pageSize) {
+        let data = {
+          currentPage: currentPage,
+          pageSize: pageSize,
+          cateId: this.formInline.cateId,
+          goodsName: this.formInline.goodsName,
+          startprice: this.formInline.startprice,
+          endprice: this.formInline.endprice,
+          sort: this.sort
+        }
+        getallgoods(data).then((res) => {
+          if(res.code == 200) {
+            this.tableData = res.data.list
+            this.totalpage = res.data.total
+          }
+        })
+      },
     handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+        this.form.goodsPic = res.data.url;
+        this.loading = false
     },
     beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
+        //const isJPG = file.type === 'image/jpeg';
+        this.loading = true
+        const isLt2M = file.size / 1024 / 1024 < 10;
 
-        if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
-        }
+        // if (!isJPG) {
+        // this.$message.error('上传头像图片只能是 JPG 格式!');
+        // }
         if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 2MB!');
         }
-        return isJPG && isLt2M;
-    }
-    }
+        //return isJPG && isLt2M;
+        return isLt2M;
+    },
+    getallcates() {
+      getallcate().then((res) => {
+        if(res.code == 200) {
+          this.options = res.data.cates
+        }
+      })
+    },
+  },
+  created(){
+    this.getallcates()
+    this.getall(this.currentPage, this.pagesize)
+  }
 }
 </script>
 
@@ -393,5 +392,9 @@ export default {
     width: 178px;
     height: 178px;
     display: block;
+  }
+  .painblock {
+    text-align: center;
+    margin-top: 20px;
   }
 </style>

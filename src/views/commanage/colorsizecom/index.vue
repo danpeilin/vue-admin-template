@@ -2,17 +2,17 @@
     <div class="mybody">
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
             <el-form-item label="商品类别">
-                <el-select v-model="formInline.selectvalue" placeholder="请选择">
+                <el-select v-model="formInline.cateId" placeholder="请选择">
                   <el-option
                     v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    :key="item.cateId"
+                    :label="item.cateName"
+                    :value="item.cateId">
                   </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="商品名称">
-              <el-input v-model="formInline.goodsname" placeholder="商品名称"></el-input>
+              <el-input v-model="formInline.goodsName" placeholder="商品名称"></el-input>
             </el-form-item>
             <el-form-item label="价格">
               <el-col :span="11">
@@ -44,10 +44,10 @@
             <el-table-column
             label="#"
             width="50"
-            prop="id">
+            prop="goodsId">
             </el-table-column>
             <el-table-column
-            prop="name"
+            prop="goodsName"
             width="500"
             label="商品名称">
             </el-table-column>
@@ -56,17 +56,17 @@
             width="200">
             <template slot-scope="scope">
                 <div style="width: 50px">
-                    <img class="img" :src="scope.row.goodsimg" />
+                    <img class="img" :src="scope.row.goodsPic" />
                 </div>
             </template>
             </el-table-column>
             <el-table-column
-            prop="price"
+            prop="goodsPrice"
             label="商品价格"
             width="200">
             </el-table-column>
             <el-table-column
-            prop="countprice"
+            prop="goodsDiscount"
             label="商品折后价格"
             width="200">
             </el-table-column>
@@ -79,6 +79,18 @@
             </el-table-column>
         </el-table>
 
+        <div class="painblock">
+          <el-pagination
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-size="pagesize"
+            layout="total, prev, pager, next"
+            :total="totalpage">
+          </el-pagination>
+        </div>
+
         <el-drawer
             title="管理商品展示图片"
             size='50%'
@@ -88,8 +100,8 @@
                     <el-tab-pane label="管理商品尺寸" name="first">
                         <el-transfer
                             v-model="sizeyesData"
-                            :props="{key: 'id',label: 'name'}"
-                            :titles="['未关联', '已关联']"
+                            :props="{key: 'sizeId',label: 'sizeName'}"
+                            :titles="['所有尺寸', '已有尺寸']"
                             @change="handleChange"
                             :data="sizenoData"
                         ></el-transfer>
@@ -97,16 +109,15 @@
                     <el-tab-pane label="管理商品颜色" name="second">
                         <el-transfer
                             v-model="coloryesData"
-                            :props="{key: 'id',label: 'name'}"
-                            :titles="['未关联', '已关联']"
-                            @change="handleChange"
+                            :props="{key: 'colorId',label: 'colorName'}"
+                            :titles="['所有颜色', '已有颜色']"
+                            @change="handle"
                             :data="colornoData"
                         ></el-transfer>
                     </el-tab-pane>
                 </el-tabs>
                 <div class="demo-drawer__footer">
                 <el-button @click="cancelForm">取 消</el-button>
-                <el-button type="primary" @click="toedit" >确定</el-button>
                 </div>
             </div>
         </el-drawer>
@@ -117,137 +128,83 @@
     </div>
 </template>
 <script>
+import {getallgoods, getallcate} from '@/api/goods'
+import {getallsize, getsizebyid, deletesize, addsize} from '@/api/size'
+import {getallcolor, getcolorbyid, deletecolor, addcolor} from '@/api/color'
 export default {
     data() {
         return {
             formInline: {
-                selectvalue: '',
-                goodsname: '',
+                cateId: '',
+                goodsName: '',
                 startprice: '',
                 endprice: ''
             },
-            options: [{
-                value: '选项1',
-                label: '黄金糕'
-            }, {
-                value: '选项2',
-                label: '双皮奶'
-            }, {
-                value: '选项3',
-                label: '蚵仔煎'
-            }, {
-                value: '选项4',
-                label: '龙须面'
-            }, {
-                value: '选项5',
-                label: '北京烤鸭'
-            }],
+            options: [],
             sorticon: 'el-icon-caret-bottom',
-            tableData: [{
-            id: '1',
-            name: '测试',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '2',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 140,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '3',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '4',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '5',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '6',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }, {
-            id: '7',
-            name: '女士内衣 新型收拢运动内衣',
-            goodsimg: require('../../../assets/fenlei1.png'),
-            price: 240,
-            countprice: 120,
-            goodscount: 20,
-            goodsmade: '棉56% 聚酯纤维30%',
-            goodsyunfei: 12,
-            goodssale: 40,
-        }],
-        drawer: false,
-        form: {
-            name: '',
-            region: '',
-            date1: '',
-            date2: '',
-            delivery: false,
-            type: [],
-            resource: '',
-            desc: ''
-        },
+            tableData: [],
+            drawer: false,
+            form: {
+                name: '',
+                region: '',
+                date1: '',
+                date2: '',
+                delivery: false,
+                type: [],
+                resource: '',
+                desc: ''
+            },
             dialogImageUrl: '',
             dialogVisible: false,
             activeName: 'first',
-            sizenoData: [{id:1,name:'测试1'},{id:2,name:'测试2'},{id:3,name:'测试3'}],
-            sizeyesData: [1,3],
+            sizenoData: [],
+            sizeyesData: [],
             coloryesData:[],
-            colornoData:[]
+            colornoData:[],
+            currentPage: 0,
+            pagesize: 10,
+            totalpage: 0,
+            sort: 'asc',
+            goodsId: ''
         }
     
     },
     methods: {
         onSubmit() {
-            console.log('submit!');
+            this.getall(this.currentPage, this.pagesize)
         },
         onsort() {
             if (this.sorticon == 'el-icon-caret-bottom') {
-            this.sorticon = 'el-icon-caret-top'
+                this.sorticon = 'el-icon-caret-top'
+                this.sort = 'desc'
+                this.getall(this.currentPage, this.pagesize)
             } else {
-            this.sorticon = 'el-icon-caret-bottom'
+                this.sorticon = 'el-icon-caret-bottom'
+                this.sort = 'asc'
+                this.getall(this.currentPage, this.pagesize)
             }
         },
+        handleSizeChange(val) {
+            console.log(`每页 ${val} 条`);
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val
+            this.getall(this.currentPage, this.pagesize)
+        },
         picedit(row) {
-            console.log(row.id)
+            this.goodsId = row.goodsId
+            this.getallcolors()
+            this.getllsizes()
+            getsizebyid(row.goodsId).then((res)=>{
+                if(res.code == 200) {
+                    this.sizeyesData = res.data.list
+                }
+            })
+            getcolorbyid(row.goodsId).then((res)=>{
+                if(res.code == 200) {
+                    this.coloryesData = res.data.list
+                }
+            })
             this.drawer = true
         },
         toedit() {
@@ -256,18 +213,83 @@ export default {
         cancelForm() {
             this.drawer = false;
         },
+        getall(currentPage, pageSize) {
+            let data = {
+            currentPage: currentPage,
+            pageSize: pageSize,
+            cateId: this.formInline.cateId,
+            goodsName: this.formInline.goodsName,
+            startprice: this.formInline.startprice,
+            endprice: this.formInline.endprice,
+            sort: this.sort
+            }
+            getallgoods(data).then((res) => {
+            if(res.code == 200) {
+                this.tableData = res.data.list
+                this.totalpage = res.data.total
+            }
+            })
+        },
+        getallcates() {
+            getallcate().then((res) => {
+                if(res.code == 200) {
+                this.options = res.data.cates
+                }
+            })
+        },
+        getallcolors() {
+            getallcolor().then((res)=>{
+                this.colornoData = res.data.list
+            })
+        },
+        getllsizes(){
+            getallsize().then((res)=>{
+                this.sizenoData = res.data.list
+            })
+        },
         handleChange(value, direction, movedKeys) {
             console.log(value, direction, movedKeys);
              //可以通过direction回调right/left 来进行操作，right：把数字移到右边，left把数据移到左边
              if(direction === "right") {
-                
+                 let data = {
+                     ids: movedKeys,
+                     goodsId: this.goodsId 
+                 }
+                addsize(data).then((res)=>{})
              }
              if(direction === "left") {
+                 let data = {
+                     ids: movedKeys,
+                     goodsId: this.goodsId 
+                 }
+                deletesize(data).then((res)=>{})
+             }
                 
+        },
+        handle(value, direction, movedKeys) {
+            console.log(value, direction, movedKeys);
+             //可以通过direction回调right/left 来进行操作，right：把数字移到右边，left把数据移到左边
+             if(direction === "right") {
+                 let data = {
+                     ids: movedKeys,
+                     goodsId: this.goodsId 
+                 }
+                addcolor(data).then((res)=>{})
+             }
+             if(direction === "left") {
+                 let data = {
+                     ids: movedKeys,
+                     goodsId: this.goodsId 
+                 }
+                deletecolor(data).then((res)=>{})
              }
                 
         }
 
+    },
+    created() {
+        this.getallcates()
+        this.getall(this.currentPage, this.pagesize)
     }
 }
 </script>
@@ -283,6 +305,10 @@ export default {
     padding: 0 20px;
 }
 .demo-drawer__footer {
+    margin-top: 20px;
+}
+.painblock {
+    text-align: center;
     margin-top: 20px;
 }
 </style>
