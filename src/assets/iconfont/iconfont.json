@@ -1,0 +1,30 @@
+{
+  "id": "2230357",
+  "name": "sg",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1127412",
+      "name": "用户组1",
+      "font_class": "usergroup1",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "845783",
+      "name": "钱",
+      "font_class": "qian",
+      "unicode": "e645",
+      "unicode_decimal": 58949
+    },
+    {
+      "icon_id": "7461693",
+      "name": "消息",
+      "font_class": "xiaoxi",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    }
+  ]
+}

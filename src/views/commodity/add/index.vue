@@ -75,7 +75,6 @@ export default {
   methods: {
     onSubmit() {
       if(this.checkForm()){
-        this.loading = true;
         var data = {
           cateName: this.form.name,
           catePic: this.form.imageUrl
@@ -89,21 +88,21 @@ export default {
     onReset(){
       this.form = [];
     },
-    handleAvatarSuccess(res, file) {
+    handleAvatarSuccess(res) {
         this.loading = false;
-        this.form.imageUrl = URL.createObjectURL(file.raw);
+        this.form.imageUrl = res.data.url;
     },
     beforeAvatarUpload(file) {
-      const isJPG = (file.type === 'image/jpeg') || (file.type === 'png') || (file.type === 'gif');
+      const isImage = (file.type === 'image/jpeg') || (file.type === 'png') || (file.type === 'gif');
       const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isJPG) {
+      if (!isImage) {
         this.$message.error('上传图片格式有误!');
       }
       if (!isLt2M) {
         this.$message.error('上传图片大小不能超过 2MB!');
       }
       this.loading = true;
-      return isJPG && isLt2M;
+      return isImage && isLt2M;
     },
     checkForm(){
       var name = false;
@@ -122,10 +121,9 @@ export default {
       uploading(data).then((res) => {
         if(res.code == 200){
           this.$message.success('上传成功');
-          this.loading = false;
         }
       })
     }
-  },
+  }
 };
 </script>

@@ -62,14 +62,14 @@
             </el-table-column>
         </el-table>
         <div class="block">
-            <el-pagination
-              @current-change="handleCurrentChange"
-              :current-page.sync="currentPage"
-              :page-size="pagesize"
-              layout="total, prev, pager, next"
-              :total="total">
-            </el-pagination>
-          </div>
+          <el-pagination
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-size="pagesize"
+            layout="total, prev, pager, next"
+            :total="total">
+          </el-pagination>
+        </div>
     </div>
 </template>
 
