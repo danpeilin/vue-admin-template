@@ -120,8 +120,8 @@ export default {
         }
       })
     },
-    handleAvatarSuccess(res, file) {
-        this.form.imageUrl = URL.createObjectURL(file.raw);
+    handleAvatarSuccess(res) {
+        this.form.imageUrl = res.data.url;
     },
     beforeAvatarUpload(file) {
         //const isJPG = file.type === 'image/jpeg';

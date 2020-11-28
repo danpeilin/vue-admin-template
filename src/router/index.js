@@ -66,13 +66,13 @@ export const constantRoutes = [
         path: 'add',
         name: 'Add',
         component: () => import('@/views/commodity/add/index'),
-        meta: { title: '添加商品', icon: 'table' }
+        meta: { title: '添加商品分类', icon: 'table' }
       },
       {
         path: 'examine',
         name: 'Examine',
         component: () => import('@/views/commodity/examine/index'),
-        meta: { title: '查看商品', icon: 'tree' }
+        meta: { title: '查看商品分类', icon: 'tree' }
       }
     ]
   },

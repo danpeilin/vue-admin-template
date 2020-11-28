@@ -102,7 +102,7 @@ export default {
     },
     //在图片上传之前回调
     beforeAvatarUpload(file) {
-        const isImage = (file.type === 'image/jpeg') || (file.type === 'png') || (file.type === 'gif');
+        const isImage = (file.type === 'image/jpeg') || (file.type === 'image/png') || (file.type === 'image/gif');
         const isLt2M = file.size / 1024 / 1024 < 2;
         if (!isImage) {
           this.$message.error('上传图片格式有误!');
@@ -110,7 +110,9 @@ export default {
         if (!isLt2M) {
           this.$message.error('上传图片大小不能超过 2MB!');
         }
+        if(isImage && isLt2M){
         this.loading = true;
+        }
         return isImage && isLt2M;
     },
     //获取要删除的行
