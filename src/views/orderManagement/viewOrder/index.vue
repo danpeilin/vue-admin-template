@@ -87,8 +87,8 @@ export default {
             {value: '',label: '请选择'},
             {value: '1',label: '申请退款中'},
             {value: '2',label: '等待付款中'},
-            {value: '3',label: '待发货'}, 
-            {value: '4',label: '申请售后中'}, 
+            {value: '3',label: '交易关闭'}, 
+            {value: '4',label: '待发货'}, 
             {value: '5',label: '已完成'}
           ],
           //顶部搜索栏数据
@@ -150,9 +150,9 @@ export default {
           switch(row.orderStatus){
             case 1: console.log("已同意退款"+row.orderCode);break;
             case 2: console.log("已取消订单"+row.orderCode);break;
-            case 3: console.log("正在发货"+row.orderCode);break;
-            case 4: console.log("处理售后服务"+row.orderCode);break;
-            case 5: this.deletelist([row.orderCode]);break;
+            case 3: this.deletelist([row.orderCode]);break;
+            case 4: console.log("正在发货"+row.orderCode);break;
+            case 5: console.log("正在结算"+row.orderCode);break;
             default:console.log(row.orderCode);
           }
         },
@@ -187,9 +187,9 @@ export default {
           switch(row.orderStatus){
             case 1: statusText = "申请退款中";btuText = "去退款"; break;
             case 2: statusText = "等待付款中";btuText = "取消订单"; break;
-            case 3: statusText = "待发货";btuText = "去发货"; break;
-            case 4: statusText = "申请售后中";btuText = "去处理"; break;
-            case 5: statusText = "已完成";btuText = "删除订单"; break;
+            case 3: statusText = "交易关闭";btuText = "删除订单"; break;
+            case 4: statusText = "待发货";btuText = "去发货"; break;
+            case 5: statusText = "已完成";btuText = "去结算"; break;
           }
           if(type == "btnText"){
             return btuText;
