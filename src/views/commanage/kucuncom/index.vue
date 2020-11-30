@@ -7,7 +7,7 @@
                 :data="tableData"
                 style="width: 100%">
                 <el-table-column
-                    prop="goodsId"
+                    prop="stockId"
                     label="#"
                     width="180">
                 </el-table-column>
@@ -15,16 +15,16 @@
                     prop="goodsName"
                     label="商品名称">
                 </el-table-column>
-                <!-- <el-table-column
-                    prop="goodssize"
+                <el-table-column
+                    prop="sizeName"
                     label="商品尺寸">
                 </el-table-column>
                 <el-table-column
-                    prop="goodscolor"
+                    prop="colorName"
                     label="商品颜色">
-                </el-table-column> -->
+                </el-table-column>
                 <el-table-column
-                    prop="goodsStock"
+                    prop="stockNum"
                     label="商品库存">
                 </el-table-column>
                 <el-table-column
@@ -43,7 +43,7 @@
                 width="30%"
                 :before-close="handleClose">
                 <span>库存</span>
-                <el-input v-model="changekucun" placeholder="请输入内容"></el-input>
+                <el-input-number v-model="changekucun" size="mini" :min="1" :max="99" label="描述文字"></el-input-number>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="dialogVisible = false">取 消</el-button>
                     <el-button type="primary" @click="toedit">确 定</el-button>
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import {getallgoods} from '@/api/goods'
+import {getallstock, updatekucun} from '@/api/stock'
 export default {
     data() {
         return {
@@ -87,12 +87,13 @@ export default {
             pagesize: 10,
             totalpage: 0,
             sort: 'asc',
+            stockId: ''
         }
     },
     methods: {
         edit(row) {
-            console.log(row.id)
-            this.changekucun = row.goodskucun
+            this.changekucun = row.stockNum
+            this.stockId = row.stockId
             this.dialogVisible = true
         },
         handleSizeChange(val) {
@@ -103,22 +104,21 @@ export default {
             this.getall(this.currentPage, this.pagesize)
         },
         toedit() {
-
+            updatekucun(this.stockId, this.changekucun).then((res) => {
+                this.$notify({
+                    title: '成功',
+                    message: res.data.msg,
+                    type: 'success'
+                });
+                this.getall(this.currentPage, this.pagesize)
+                this.dialogVisible = false
+            })
         },
         getall(currentPage, pageSize) {
-        let data = {
-            currentPage: currentPage,
-            pageSize: pageSize,
-            cateId: this.formInline.cateId,
-            goodsName: this.formInline.goodsName,
-            startprice: this.formInline.startprice,
-            endprice: this.formInline.endprice,
-            sort: this.sort
-            }
-            getallgoods(data).then((res) => {
+            getallstock(currentPage, pageSize).then((res) => {
             if(res.code == 200) {
                 this.tableData = res.data.list
-                this.totalpage = res.data.total
+                this.totalpage = res.data.totalpage
             }
             })
         },

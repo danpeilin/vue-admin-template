@@ -128,12 +128,12 @@ export const constantRoutes = [
         component: () => import('@/views/commanage/colorsizecom/index'),
         meta: { title: '尺寸颜色管理', icon: 'tree' },
       },
-      // {
-      //   path: '/kucuncom',
-      //   name: 'kucuncom',
-      //   component: () => import('@/views/commanage/kucuncom/index'),
-      //   meta: { title: '商品库存管理', icon: 'tree' },
-      // },
+      {
+        path: '/kucuncom',
+        name: 'kucuncom',
+        component: () => import('@/views/commanage/kucuncom/index'),
+        meta: { title: '商品库存管理', icon: 'tree' },
+      },
     ]
   },
   {
