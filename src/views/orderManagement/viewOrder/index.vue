@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { orderList,deleteOrder } from '@/api/order';
+import { orderList,deleteOrder,modifyStatusCode} from '@/api/order';
 export default {
     data() {
         return {
@@ -149,7 +149,7 @@ export default {
         formdelete(row){
           switch(row.orderStatus){
             case 1: console.log("已同意退款"+row.orderCode);break;
-            case 2: console.log("已取消订单"+row.orderCode);break;
+            case 2: this.setStatusCode(row.orderId);break;
             case 3: this.deletelist([row.orderCode]);break;
             case 4: console.log("正在发货"+row.orderCode);break;
             case 5: console.log("正在结算"+row.orderCode);break;
@@ -207,6 +207,14 @@ export default {
             console.log(res)
           }
           );
+        },
+        //修改状态码
+        setStatusCode(code){
+          modifyStatusCode(code).then((res) => {
+            if(res.code == 200){
+              this.getTableList(this.currentPage,this.pagesize);
+            }
+          })
         }
     },
     created(){

@@ -15,3 +15,10 @@ export function deleteOrder(data){
         data: data
     })
 }
+
+export function modifyStatusCode(code){
+    return request({
+        url: `/admin/order/statusCode/${code}`,
+        method: 'get'
+    })
+}
